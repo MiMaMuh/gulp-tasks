@@ -1,3 +1,26 @@
+/**
+ * Purpose: Gulp task for creating a assets.json which maps a the name
+ * of a file to its path within the craft project relative to the
+ * public web dir. The task expects a naming convention of the src files
+ * of name-hash.extension
+ *
+ * It generates a asset json like this:
+ *
+ * {
+ *  "css/main": "/main-zzz.bundle.css",
+ * 	"js/collection": "/assets/js/collection-zzz.bundle.js",
+ * 	"js/collections": "/assets/js/collections-zzz.bundle.js"
+ * }
+ *
+ * The assets.json is specifically made to work well with craft-asset-rev
+ * plugin: https://github.com/clubstudioltd/craft-asset-rev
+ *
+ * The factory expects three params:
+ * 	{Gulp} gulp - gulp instance to register the task to
+ *  {String} taskName - unique name for the task
+ *  {Object} config - a config file
+ */
+
 // @flow
 /* eslint-disable no-console, import/no-extraneous-dependencies, compat/compat */
 // const gulp = require('gulp');

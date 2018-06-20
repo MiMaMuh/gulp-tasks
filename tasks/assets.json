@@ -1,3 +1,0 @@
-{
-  <% assets.forEach(function(asset, index) { %>"<%- asset.key %>": "<%- asset.value %>"<%- (assets.length === index + 1) ? '' : ',\n\t' %><% }); %>
-}

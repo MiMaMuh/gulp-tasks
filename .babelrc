@@ -1,0 +1,45 @@
+{
+	"presets": [
+		[
+			"env",
+			{
+				"useBuiltIns": "entry",
+				"ignoreBrowserslistConfig": false,
+				"targets": {
+					"node": 8,
+					"browsers": [
+						"last 3 versions",
+						"> 1% in DE",
+						"Chrome >= 40",
+						"Firefox >= 35",
+						"Safari >= 8",
+						"iOS >= 8",
+						"Explorer >= 10",
+						"Edge >= 12"
+					]
+				}
+			}
+		],
+		"stage-0",
+		"react"
+	],
+	"plugins": [
+		"transform-class-properties",
+		"transform-es2015-classes",
+		"add-module-exports"
+	],
+	"env": {
+		"production": {},
+		"development": {
+			"plugins": [
+				[
+					"flow-runtime",
+					{
+						"assert": true,
+						"annotate": true
+					}
+				]
+			]
+		}
+	}
+}

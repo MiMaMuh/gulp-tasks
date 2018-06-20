@@ -22,7 +22,7 @@ function taskFactory(gulp, taskName, config) {
 	// parse config ...
 	const { commands, allowForceRemove, dryRun } = parseConfig(config);
 
-	/** This taks removes all old files from the craft project */
+	/** This taks removes all old files from the dist project */
 	function cleanDistFilesTask() {
 		const removeGlobs = [];
 
@@ -60,7 +60,7 @@ function taskFactory(gulp, taskName, config) {
 		return removeFiles(removeGlobs, allowForceRemove, dryRun);
 	}
 
-	/** This taks copies the new files to the craft project */
+	/** This taks copies the new files to the dist project */
 	function copyFilesTask() {
 		const promises = [];
 
