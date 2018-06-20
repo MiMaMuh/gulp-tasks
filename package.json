@@ -1,6 +1,6 @@
 {
 	"name": "gulp-tasks",
-	"version": "0.0.5",
+	"version": "1.0.0",
 	"description": "Some gulp task factories to help with working with frontend and craft backends.",
 	"main": "src/index.js",
 	"repository": {
