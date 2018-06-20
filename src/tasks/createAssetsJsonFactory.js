@@ -38,10 +38,6 @@ const {
 
 const CRAFT_PUBLIC_DIR = 'web';
 
-// the path where our assets.json template file is
-// located relative to our gulpfile.js
-const PATH_ASSETS_JSON_TEMPLATE = 'gulpfiles/copy_bundles_to_craft/assets.json';
-
 // possible seperators for our asset files
 // we use this regex to trim the first word from
 // all filenames which should be part of the assets.json
@@ -49,6 +45,7 @@ const PATH_ASSETS_JSON_TEMPLATE = 'gulpfiles/copy_bundles_to_craft/assets.json';
 // assets.json
 const FILENAME_SEPERATORS = /(\.|-|_)/g;
 
+// the lodash template to generate the assets.json
 const ASSETS_JSON_TEMPLATE = `
 {
   <% assets.forEach(function(asset, index) { %>"<%- asset.key %>": "<%- asset.value %>"<%- (assets.length === index + 1) ? '' : ',\\n\\t' %><% }); %>
