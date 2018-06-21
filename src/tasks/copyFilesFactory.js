@@ -2,7 +2,8 @@
 // const gulp = require('gulp');
 const assert = require('assert');
 const colors = require('colors/safe');
-const { getGlobPath, removeFiles, parseConfig } = require('../utils/index');
+const configSchema = require('../schmeas/copyFilesConfigSchema');
+const { getGlobPath, removeFiles } = require('../utils/index');
 
 function taskFactory(gulp, taskName, config) {
 	// check if we got a valid name for our task
@@ -20,7 +21,7 @@ function taskFactory(gulp, taskName, config) {
 	);
 
 	// parse config ...
-	const { commands, allowForceRemove, dryRun } = parseConfig(config);
+	const { copy, permissions } = configSchema.validateSync(config);
 
 	/** This taks removes all old files from the dist project */
 	function cleanDistFilesTask() {
@@ -28,17 +29,19 @@ function taskFactory(gulp, taskName, config) {
 
 		// looks in all commands if we should remove the old files
 		// in our dist folders. then we create globs to find these files
-		commands.forEach(
-			({ removeDistFiles, to, extensions, includeSubDirs }) => {
-				if (removeDistFiles) {
-					const glob = getGlobPath(to, extensions, includeSubDirs);
-					removeGlobs.push(glob);
-				}
+		copy.forEach(({ removeDistFiles, to, extensions, includeSubDirs }) => {
+			if (removeDistFiles) {
+				const glob = getGlobPath(to, extensions, includeSubDirs);
+				removeGlobs.push(glob);
 			}
-		);
+		});
 
 		// remove the old files which matched with our globs
-		return removeFiles(removeGlobs, allowForceRemove, dryRun);
+		return removeFiles(
+			removeGlobs,
+			permissions.allowForceRemove,
+			permissions.dryRun
+		);
 	}
 
 	/** This task remove all old files from the frontend src folder */
@@ -47,17 +50,19 @@ function taskFactory(gulp, taskName, config) {
 
 		// looks in all commands if we should remove the old files
 		// in our dist folders. then we create globs to find these files
-		commands.forEach(
-			({ removeSrcFiles, from, extensions, includeSubDirs }) => {
-				if (removeSrcFiles) {
-					const glob = getGlobPath(from, extensions, includeSubDirs);
-					removeGlobs.push(glob);
-				}
+		copy.forEach(({ removeSrcFiles, from, extensions, includeSubDirs }) => {
+			if (removeSrcFiles) {
+				const glob = getGlobPath(from, extensions, includeSubDirs);
+				removeGlobs.push(glob);
 			}
-		);
+		});
 
 		// remove the old files which matched with our globs
-		return removeFiles(removeGlobs, allowForceRemove, dryRun);
+		return removeFiles(
+			removeGlobs,
+			permissions.allowForceRemove,
+			permissions.dryRun
+		);
 	}
 
 	/** This taks copies the new files to the dist project */
@@ -65,14 +70,14 @@ function taskFactory(gulp, taskName, config) {
 		const promises = [];
 
 		// read all commands ...
-		commands.forEach(({ from, to, extensions, includeSubDirs }) => {
+		copy.forEach(({ from, to, extensions, includeSubDirs }) => {
 			// create glob pathes from 'from' and 'to'
 			const fromGlob = getGlobPath(from, extensions, includeSubDirs);
 			const toGlob = to;
 
 			// start the copy command
 			const promise = new Promise((resolve, reject) => {
-				if (!dryRun) {
+				if (!permissions.dryRun) {
 					console.log(
 						`\t${colors.blue(
 							'Copy files from'

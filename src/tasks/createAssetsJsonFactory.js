@@ -1,8 +1,7 @@
 /**
- * Purpose: Gulp task for creating a assets.json which maps a the name
- * of a file to its path within the craft project relative to the
- * public web dir. The task expects a naming convention of the src files
- * of name-hash.extension
+ * Purpose: Gulp task for creating a assets.json which maps the name
+ * of a asset to its path. The task expects a naming convention of
+ * the src files of: name-hash.extension
  *
  * It generates a asset json like this:
  *
@@ -29,14 +28,11 @@ const file = require('gulp-file');
 const assert = require('assert');
 const colors = require('colors/safe');
 const path = require('path');
-const {
-	getGlobPath,
-	removeFiles,
-	findFiles,
-	parseConfig,
-} = require('../utils');
+const configSchema = require('../schmeas/assetsJsonConfigSchema');
+const { getGlobPath, removeFiles, findFiles } = require('../utils');
 
-const CRAFT_PUBLIC_DIR = 'web';
+// name of the assets.json file
+const ASSETS_JSON_FILE_NAME = 'assets.json';
 
 // possible seperators for our asset files
 // we use this regex to trim the first word from
@@ -56,10 +52,9 @@ const ASSETS_JSON_TEMPLATE = `
  * Uses assets with path strings and map it to
  * data entries for our asset.json template
  * @param {Array<string>} assets pathes of assets which should be included in the asset.json
- * @param {string} craftDir root dir of the craft project - relative or absolute
+ * @param {string} assetsShouldBeRelativeTo to which project folder the asset files should be relative to
  */
-function getTemplateData(assets, craftDir) {
-	const craftWebDir = path.join(craftDir, CRAFT_PUBLIC_DIR);
+function generateTemplateData(assets, assetsShouldBeRelativeTo) {
 	return assets.map(asset => {
 		// get name and the extension from path
 		const { name, ext } = path.parse(asset);
@@ -68,7 +63,7 @@ function getTemplateData(assets, craftDir) {
 		const base = name.substr(0, name.search(FILENAME_SEPERATORS));
 		// the public pass through which the asset is accessible
 		// based from the rood domain.
-		const publicPath = path.relative(craftWebDir, asset);
+		const publicPath = path.relative(assetsShouldBeRelativeTo, asset);
 		// extension without .
 		const cleanExt = ext.replace('.', '');
 		return {
@@ -77,24 +72,6 @@ function getTemplateData(assets, craftDir) {
 		};
 	});
 }
-
-/**
- * Generates a glob string for our assets.json file
- * @param {sting} assetDir dir where the asset json should be generated
- */
-function assetJsonGlob(assetDir) {
-	const slash = assetDir.endsWith('/') ? '' : '/';
-	return `${assetDir}${slash}assets.json`;
-}
-
-/**
- * Filters sourcemap extension from the passed
- * extension array: ['js', 'js.map'] => ['js']
- * @param {Array<string>} extensions
- */
-// function withoutSourceMaps(extensions) {
-// 	return extensions.filter(extension => !extension.endsWith('.map'));
-// }
 
 function taskFactory(gulp, taskName, config) {
 	// check if we got an name
@@ -112,67 +89,79 @@ function taskFactory(gulp, taskName, config) {
 	);
 
 	// parse config ...
-	const { commands, allowForceRemove, dryRun, craftDir } = parseConfig(
-		config
-	);
+	const {
+		include,
+		permissions,
+		projectRoot,
+		output,
+	} = configSchema.validateSync(config);
 
 	/** Task removes the assets.json file */
 	function removeAssetFile() {
-		return removeFiles(assetJsonGlob(craftDir), allowForceRemove, dryRun);
+		return removeFiles(
+			path.join(
+				projectRoot,
+				output.storeAssetsJsonTo,
+				ASSETS_JSON_FILE_NAME
+			),
+			permissions.allowForceRemove,
+			permissions.dryRun
+		);
 	}
 
 	/** Task creates the new assets.json file */
 	function createAssetFile() {
 		const assetGlobs = [];
 
-		// Genertes the assetGlobs based on our commands
+		// Genertes the assetGlobs based on the includes
 		// We use the assetGlobs to find all files we may
 		// include in our assets.json
-		commands.forEach(
-			({ to, extensions, includeSubDirs, includeInAssetJson }) => {
-				if (includeInAssetJson) {
-					const globPath = getGlobPath(
-						to,
-						extensions,
-						includeSubDirs
-					);
-					assetGlobs.push(globPath);
-				}
-			}
-		);
+		include.forEach(({ from, extensions, includeSubDirs }) => {
+			const globPath = getGlobPath(
+				path.join(projectRoot, from),
+				extensions,
+				includeSubDirs
+			);
+			assetGlobs.push(globPath);
+		});
 
 		// find all the files by the generated globs array
 		// and generate the assets.json from it
 		return findFiles(assetGlobs).then(assetPathes => {
 			// 1. generate the data for the assets.json template
 			const templateData = {
-				assets: getTemplateData(assetPathes, craftDir),
+				assets: generateTemplateData(
+					assetPathes,
+					path.join(projectRoot, output.assetsShouldBeRelativeTo)
+				),
 			};
 
-			if (dryRun) {
+			if (permissions.dryRun) {
 				console.log(
 					`\t${colors.blue(
-						'[dry run] Create asset.json in'
-					)} ${craftDir} ${colors.blue(
+						'[dry run] Create assets.json in'
+					)} ${projectRoot} ${colors.blue(
 						'with these template data:'
 					)} ${JSON.stringify(templateData, null, ' ')}`
 				);
 
-				return file('assets.json', ASSETS_JSON_TEMPLATE, {
+				return file(ASSETS_JSON_FILE_NAME, ASSETS_JSON_TEMPLATE, {
 					src: true,
 				}).pipe(template(templateData));
 			}
 
 			// 2. inform terminal about generated assets.json
 			console.log(
-				`\t${colors.blue('Create assets.json in')} ${craftDir}`
+				`\t${colors.blue('Create assets.json in')} ${projectRoot}`
 			);
 
 			// 3. fill template with data and store the assets.json
 			// in the root dir of our craft project
-			return file('assets.json', ASSETS_JSON_TEMPLATE, { src: true })
+			return file(ASSETS_JSON_FILE_NAME, ASSETS_JSON_TEMPLATE, {
+				src: true,
+			})
 				.pipe(template(templateData))
-				.pipe(gulp.dest(craftDir));
+				.pipe(gulp.dest(projectRoot));
 		});
 	}
 

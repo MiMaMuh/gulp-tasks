@@ -1,6 +1,6 @@
 {
 	"name": "gulp-tasks",
-	"version": "1.0.0",
+	"version": "2.0.0",
 	"description": "Some gulp task factories to help with working with frontend and craft backends.",
 	"main": "src/index.js",
 	"repository": {
@@ -32,8 +32,9 @@
 		"del": "^3.0.0",
 		"glob": "^7.1.2",
 		"glob-promise": "^3.4.0",
+		"gulp-file": "^0.4.0",
 		"gulp-template": "^5.0.0",
-		"gulp-file": "^0.4.0"
+		"yup": "^0.25.1"
 	},
 	"peerDependencies": {
 		"gulp": "^4.0.0"

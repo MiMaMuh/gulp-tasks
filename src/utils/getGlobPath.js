@@ -1,4 +1,5 @@
 // @flow
+const path = require('path');
 
 /** Generates a glob path based on a file path,
  * one or more extensions and the option, if it
@@ -12,13 +13,12 @@
 function getGlobPath(dir, extensions, includeSubDirs = false) {
 	// with subdirs: my/path/**/*.{js|css|html}
 	// without subdirs: my/path/*.{js|css|html}
-	const slash = dir.endsWith('/') ? '' : '/';
-	const subdir = includeSubDirs ? '**/*' : '*';
+	const depth = includeSubDirs ? '/**/' : '/';
 	const ext =
 		extensions.length > 1
 			? `{${extensions.join(',')}}`
 			: extensions.join('');
-	return `${dir}${slash}${subdir}.${ext}`;
+	return path.join(dir, depth, `*.${ext}`);
 }
 
 module.exports = getGlobPath;
