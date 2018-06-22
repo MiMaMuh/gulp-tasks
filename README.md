@@ -40,7 +40,7 @@ Copies files from one project to another one.
 ```js
 // gulpfile.js
 const gulp = require('gulp');
-const { copyFilesFactory } = require('gulp-tasks');
+const { copyFilesFactory } = require('@mimamuh/gulp-tasks');
 
 // Permission settings for specific tasks.
 // They may not apply to all tasks!!!
@@ -129,7 +129,7 @@ The outputted `asset.json` file will have a structure of:
 ```js
 // gulpfile.js
 const gulp = require('gulp');
-const { createAssetsJsonFactory } = require('gulp-tasks');
+const { createAssetsJsonFactory } = require('@mimamuh/gulp-tasks');
 
 // Permission settings for specific tasks.
 // They may not apply to all tasks!!!
