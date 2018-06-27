@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.0.1] - 2018-06-27
+### Fix
+- Fixes [#2](https://github.com/MiMaMuh/gulp-tasks/issues/2) issue when `config.output.storeAssetsJsonTo` wasn't working
 
 ## [2.0.0] - 2018-06-21
 ### Changed

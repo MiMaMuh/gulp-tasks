@@ -136,11 +136,16 @@ function taskFactory(gulp, taskName, config) {
 				),
 			};
 
+			const assetJsonDestination = path.join(
+				projectRoot,
+				output.storeAssetsJsonTo
+			);
+
 			if (permissions.dryRun) {
 				console.log(
 					`\t${colors.blue(
 						'[dry run] Create assets.json in'
-					)} ${projectRoot} ${colors.blue(
+					)} ${assetJsonDestination} ${colors.blue(
 						'with these template data:'
 					)} ${JSON.stringify(templateData, null, ' ')}`
 				);
@@ -152,7 +157,9 @@ function taskFactory(gulp, taskName, config) {
 
 			// 2. inform terminal about generated assets.json
 			console.log(
-				`\t${colors.blue('Create assets.json in')} ${projectRoot}`
+				`\t${colors.blue(
+					'Create assets.json in'
+				)} ${assetJsonDestination}`
 			);
 
 			// 3. fill template with data and store the assets.json
@@ -161,7 +168,7 @@ function taskFactory(gulp, taskName, config) {
 				src: true,
 			})
 				.pipe(template(templateData))
-				.pipe(gulp.dest(projectRoot));
+				.pipe(gulp.dest(assetJsonDestination));
 		});
 	}
 

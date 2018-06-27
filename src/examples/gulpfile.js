@@ -78,7 +78,7 @@ const assetsJsonConfig = {
 		assetsShouldBeRelativeTo: './web/',
 		// Use "storeAssetsJsonTo" to specify where you want to store
 		// your assets.json file relative to "projectRoot".
-		storeAssetsJsonTo: './',
+		storeAssetsJsonTo: './web/',
 	},
 	// Array with include commands ...
 	// @from: Use "from" to specify from where you want to include assets to your assets.json.
