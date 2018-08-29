@@ -74,18 +74,30 @@ function generateTemplateData(assets, assetsShouldBeRelativeTo) {
 }
 
 function taskFactory(gulp, taskName, config) {
+	// check if we got the gulp dependency
+	assert.equal(
+		typeof gulp === 'object' &&
+			!!gulp.task &&
+			!!gulp.src &&
+			!!gulp.dest &&
+			!!gulp.series &&
+			!!gulp.parallel,
+		true,
+		'First parameter "gulp" has to be the injected gulp dependency in version >=4.0.0.'
+	);
+
 	// check if we got an name
 	assert.equal(
 		typeof taskName,
 		'string',
-		'First parameter "taskName" hast to be a string.'
+		'Second parameter "taskName" hast to be a string.'
 	);
 
 	// check if we got a config object
 	assert.equal(
 		config instanceof Object,
 		true,
-		'Second parameter "config" is missing or it is not a Object.'
+		'Third parameter "config" is missing or it is not a Object.'
 	);
 
 	// parse config ...
