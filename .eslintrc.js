@@ -1,6 +1,6 @@
 module.exports = {
 	env: {
-		node: true,
+		browser: true,
 		es6: true,
 	},
 	parser: 'babel-eslint',
@@ -12,8 +12,12 @@ module.exports = {
 		sourceType: 'module',
 	},
 	extends: [
-		// 'eslint:recommended',
+		'eslint:recommended',
 		'plugin:react/recommended',
+		'plugin:jest/recommended',
+		'plugin:jsx-a11y/recommended',
+		'plugin:import/warnings',
+		'plugin:import/errors',
 		'airbnb',
 		'prettier',
 		'prettier/flowtype',
@@ -26,6 +30,7 @@ module.exports = {
 		'promise',
 		'compat',
 		'react',
+		'jest',
 		'jsx-a11y',
 	],
 	settings: {
@@ -38,7 +43,7 @@ module.exports = {
 	rules: {
 		'no-bitwise': ['error', { allow: ['~'] }],
 		'no-plusplus': 0,
-		quotes: ['error', 'single'],
+		quotes: ['error', 'single', { avoidEscape: true }],
 		semi: ['error', 'always'],
 
 		// compat plugin
