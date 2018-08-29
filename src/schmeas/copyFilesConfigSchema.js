@@ -16,29 +16,37 @@ const EXAMPLE_SHAPE = {
 	],
 };
 
+const copyCommandSchemaErrors = {
+	from:
+		'"from" has to be an string value. Use "from" to specify from which folder you want to copy files.',
+	to:
+		'"to" has to be an string value. Use "to" to specify to which folder you want to copy the files.',
+	extensions:
+		'"extensions" has to be an string value. Use "extensions" to specify which files should be copied based on their extension.',
+	includeSubDirs:
+		'"includeSubDirs" has to be a boolean value. Use "includeSubDirs" when you also want to copy files from subdirectories. Defaults to "false". Files copied from subdirectories keep their folder structure.',
+	removeSrcFiles:
+		'"removeSrcFiles" has to be a boolean value. Use "removeSrcFiles" when source files should be deleted after they have been copied to their destination. Defaults to "false".',
+	removeDistFiles:
+		'"removeDistFiles" has to be a boolean value. Use "removeDistFiles" when files in the destination directory should be removed before new files will be copied there. It only removes files which match the same extension patterns like the source files. Defaults to "false".',
+};
 const copyCommandSchema = yup.object().shape({
 	from: yup
 		.string()
-		.required()
-		.typeError(
-			'"from" has to be an string value. Use "from" to specify from which folder you want to copy files.'
-		),
+		.required(copyCommandSchemaErrors.from)
+		.typeError(copyCommandSchemaErrors.from),
 
 	to: yup
 		.string()
-		.required()
-		.typeError(
-			'"to" has to be an string value. Use "to" to specify to which folder you want to copy the files.'
-		),
+		.required(copyCommandSchemaErrors.to)
+		.typeError(copyCommandSchemaErrors.to),
 
 	extensions: yup
 		.array()
 		.of(
 			yup
-				.string()
-				.typeError(
-					'"extensions" has to be an string value. Use "extensions" to specify which files should be copied based on their extension.'
-				)
+				.string(copyCommandSchemaErrors.extensions)
+				.typeError(copyCommandSchemaErrors.extensions)
 		)
 		.required()
 		.min(1)
@@ -47,25 +55,26 @@ const copyCommandSchema = yup.object().shape({
 	includeSubDirs: yup
 		.boolean()
 		.default(false)
-		.typeError(
-			'"includeSubDirs" has to be a boolean value. Use "includeSubDirs" when you also want to copy files from subdirectories. Defaults to "false". Files copied from subdirectories keep their folder structure.'
-		),
+		.typeError(copyCommandSchemaErrors.includeSubDirs),
 
 	removeSrcFiles: yup
 		.boolean()
 		.default(false)
-		.typeError(
-			'"removeSrcFiles" has to be a boolean value. Use "removeSrcFiles" when source files should be deleted after they have been copied to their destination. Defaults to "false".'
-		),
+		.typeError(copyCommandSchemaErrors.removeSrcFiles),
 
 	removeDistFiles: yup
 		.boolean()
 		.default(false)
-		.typeError(
-			'"removeDistFiles" has to be a boolean value. Use "removeDistFiles" when files in the destination directory should be removed before new files will be copied there. It only removes files which match the same extension patterns like the source files. Defaults to "false".'
-		),
+		.typeError(copyCommandSchemaErrors.removeDistFiles),
 });
 
+const schemaErrors = {
+	copy: `"config.copy" is a required field. Use it to specify all your copy commands using the following structure: \n\n${JSON.stringify(
+		EXAMPLE_SHAPE,
+		null,
+		'  '
+	)}\n`,
+};
 module.exports = yup.object().shape({
 	// some permissions concerning all tasks like
 	// if the tasks are allowed to run outside of the
@@ -76,15 +85,7 @@ module.exports = yup.object().shape({
 	copy: yup
 		.array()
 		.of(copyCommandSchema)
-		.required(
-			`"config.copy" is a required field. Use it to specify all your copy commands using the following structure: \n\n${JSON.stringify(
-				EXAMPLE_SHAPE,
-				null,
-				'  '
-			)}\n`
-		)
+		.required(schemaErrors.copy)
 		.ensure()
-		.typeError(
-			'"copy" has to be an array. Use "copy" to to specify settings from where to where you want to copy files.'
-		),
+		.typeError(schemaErrors.copy),
 });
