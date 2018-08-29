@@ -1,6 +1,6 @@
 {
 	"name": "@mimamuh/gulp-tasks",
-	"version": "2.0.1",
+	"version": "2.1.0",
 	"description": "Some gulp task factories to help with working with frontend and craft backends.",
 	"main": "src/index.js",
 	"repository": {
