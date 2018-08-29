@@ -1,7 +1,11 @@
 const gulp = require('gulp');
-const { copyFilesFactory, createAssetsJsonFactory } = require('gulp-tasks');
+const {
+	copyFilesFactory,
+	createAssetsJsonFactory,
+	injectImportStatementsFactory,
+} = require('./../../gulp-tasks');
 
-const taskName = 'copy-bundles';
+const taskName = 'bundles-to-backend';
 const taskNameCopyFiles = `${taskName}:copy`;
 const taskNameAssetsJson = `${taskName}:assets.json`;
 
@@ -103,3 +107,35 @@ createAssetsJsonFactory(gulp, taskNameAssetsJson, assetsJsonConfig);
 
 // Finally we combine the copy task and the assets.json task to one task
 gulp.task(taskName, gulp.series(taskNameCopyFiles, taskNameAssetsJson));
+
+// Inject scss dependencies to a global.scss file
+const injectScssConfig = {
+	// Glob string to find files to be
+	// injected as import statements to your
+	// summary file.
+	inject: './src/**/styles/*.scss',
+	to: {
+		// File in which we inject the found files
+		// as a import statement
+		file: './src/assets/scss/global.scss',
+		// Inject import statements between the following
+		// tags. Make sure to have them written in your file!
+		between: {
+			startTag: '/* inject:imports */',
+			endTag: '/* endinject */',
+		},
+	},
+	// Template for the import statement.
+	// It uses the lodash template syntax:
+	// https://lodash.com/docs/4.17.10#template
+	// Possible variables are:
+	// <%= path %> 		'/home/user/dir/file.txt'
+	// <%= base %> 		'file.txt'
+	// <%= ext %> 		'.txt'
+	// <%= dir %> 		'/home/user/dir'
+	// <%= name %> 		'file'
+	// <%= root %> 		'/'
+	with: "@import '<%= dir %>/<%= name %>';",
+};
+
+injectImportStatementsFactory(gulp, 'inject-scss', injectScssConfig);

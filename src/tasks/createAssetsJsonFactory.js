@@ -101,6 +101,7 @@ function taskFactory(gulp, taskName, config) {
 	);
 
 	// parse config ...
+	console.log(config);
 	const {
 		include,
 		permissions,
