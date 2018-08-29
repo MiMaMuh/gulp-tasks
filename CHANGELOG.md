@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-## [2.2.0] - 2018-08-29
+## [2.1.0] - 2018-08-29
 ### Added
 - `injectImportStatementsFactory(gulp, taskName, config)` to inject import statements of collected files into a specific summary file.
 
