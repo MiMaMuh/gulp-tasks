@@ -186,3 +186,65 @@ const assetsJsonConfig = {
 // Create the generate assets.json task
 createAssetsJsonFactory(gulp, 'create-assets-json', assetsJsonConfig);
 ```
+
+
+
+
+---------------------------------------------------------------
+
+
+
+
+### injectImportStatementsFactory(gulp, taskName, config)
+
+Inject import statements to a file. It allows to configure, where to look for files, define a template for the import statement and in which file and where it should place the import statements.
+
+#### Params:
+* `gulp` - gulp instance
+* `taskName` - unique name of the task
+* `config` - configuration object
+
+#### Example usage:
+In this example we look for all scss files within `styles` folders in our project and inject them as `@import '<%= dir %>/<%= name %>';` in our `global.scss` file.
+```js
+// gulpfile.js
+const gulp = require('gulp');
+const { injectImportStatementsFactory } = require('@mimamuh/gulp-tasks');
+
+// Inject scss dependencies to a global.scss file
+const injectScssConfig = {
+	// Glob string to find files to be
+	// injected as import statements to your
+	// summary file.
+	inject: './src/**/styles/*.scss',
+	to: {
+		// File in which we inject the found files
+		// as a import statement
+		file: './src/assets/scss/global.scss',
+		// Inject import statements between the following
+		// tags. Make sure to have them written in your file!
+		between: {
+			startTag: '/* inject:imports */',
+			endTag: '/* endinject */',
+		},
+	},
+	// Template for the import statement.
+	// It uses the lodash template syntax:
+	// https://lodash.com/docs/4.17.10#template
+	// Possible variables are:
+	// <%= path %> 		'/home/user/dir/file.txt'
+	// <%= base %> 		'file.txt'
+	// <%= ext %> 		'.txt'
+	// <%= dir %> 		'/home/user/dir'
+	// <%= name %> 		'file'
+	// <%= root %> 		'/'
+	with: "@import '<%= dir %>/<%= name %>';",
+};
+
+injectImportStatementsFactory(gulp, 'inject-scss', injectScssConfig);
+
+```
+
+
+
+---------------------------------------------------------------
